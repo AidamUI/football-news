@@ -23,7 +23,7 @@ def show_main(request):
         news_list = News.objects.filter(user=request.user)
 
     context = {
-        'npm': '240123456',
+        'npm': '2406404781',
         'name': request.user.username,
         'class': 'PBP A',
         'news_list': news_list,
@@ -125,3 +125,23 @@ def logout_user(request):
 # {% url 'main:logout' %} digunakan untuk mengarah ke URL secara dinamis berdasarkan app_name dan name yang sudah didefinisikan di urls.py. Secara umum, penulisannya adalah dengan {% url 'app_name:view_name' %}:
 # app_name merupakan nama app yang didefinisikan di dalam berkas urls.py. Jika app menggunakan atribut app_name di urls.py, maka ini akan dipakai untuk merujuk pada app tersebut. Jika app_name tidak didefinisikan maka nama app yang digunakan adalah nama dari folder app yang dibuat.
 # view_name merupakan nama dari URL yang diinginkan, didefinisikan melalui parameter name dalam path() di urls.py.
+
+
+# NEWS EDITING
+def edit_news(request, id):
+    news = get_object_or_404(News, pk=id)
+    form = NewsForm(request.POST or None, instance=news)
+    if form.is_valid() and request.method == 'POST':
+        form.save()
+        return redirect('main:show_main')
+
+    context = {
+        'form': form
+    }
+
+    return render(request, "edit_news.html", context)
+
+def delete_news(request, id):
+    news = get_object_or_404(News, pk=id)
+    news.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
